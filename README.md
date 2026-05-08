@@ -14,15 +14,25 @@ https://github.com/FudanSELab/train-ticket
 
 ## Planned solution (summary)
 
-**Data layer (`GraphModule`):** On startup, the app reads a single JSON file, normalizes edges (each `to` may be a string or an array of targets), validates edge endpoints against known nodes, and builds an adjacency list plus a node map. Optional fields on nodes get safe defaults (`publicExposed`, `vulnerabilities`). Unknown node `kind` strings are coerced to `service` with a log warning so the domain model stays a closed union (`NodeKind`).
+**Data layer (`GraphModule`):** 
 
-**Query layer (`QueryModule`):** Routes are directed paths of **at least two nodes**, discovered by DFS from **entry nodes only** (nodes with no incoming edges). That removes meaningless one-node “routes” (e.g. isolated services or sinks listed alone). When a sink node still has outgoing edges (hypothetical data), the walker records the prefix ending at the sink and **continues** so longer paths are not lost.
+On startup, the app reads a single JSON file, normalizes edges (each `to` may be a string or an array of targets), validates edge endpoints against known nodes, and builds an adjacency list plus a node map. Optional fields on nodes get safe defaults (`publicExposed`, `vulnerabilities`). Unknown node `kind` strings are coerced to `service` with a log warning so the domain model stays a closed union (`NodeKind`).
 
-**Filters:** Three assignment filters (`startPublic`, `endSink`, `hasVulnerability`) are small classes implementing a shared `RouteFilter` interface. They are registered under a single injection token and applied in sequence when the corresponding query flag is `true`, giving **AND** semantics. Adding a filter means: new class + DTO field + one line in the module factory—no edits to existing filters.
+**Query layer (`QueryModule`):** 
 
-**API surface:** `GET /api/graph` (full graph), `GET /api/graph/routes` (routes + optional filters), `GET /api/graph/filters` (self-describing filter list), **`POST /api/graph`** (multipart field `file` — JSON document; replaces the in-memory graph). Input is validated with `class-validator`; unknown query keys return **400**. **OpenAPI** is served at `/api/docs`.
+Routes are directed paths of **at least two nodes**, discovered by DFS from **entry nodes only** (nodes with no incoming edges). That removes meaningless one-node “routes” (e.g. isolated services or sinks listed alone). When a sink node still has outgoing edges (hypothetical data), the walker records the prefix ending at the sink and **continues** so longer paths are not lost.
 
-**Graph loading:** Startup and HTTP upload both apply data through **`GraphIngestionService.ingest()`** so you can extend validation, auditing, or swap the bundled initial source by changing Nest providers (`GRAPH_INITIAL_SOURCE` → your adapter). See `docs/ARCHITECTURE.md`.
+**Filters:** 
+
+Three assignment filters (`startPublic`, `endSink`, `hasVulnerability`) are small classes implementing a shared `RouteFilter` interface. They are registered under a single injection token and applied in sequence when the corresponding query flag is `true`, giving **AND** semantics. Adding a filter means: new class + DTO field + one line in the module factory—no edits to existing filters.
+
+**API surface:** 
+
+`GET /api/graph` (full graph), `GET /api/graph/routes` (routes + optional filters), `GET /api/graph/filters` (self-describing filter list), **`POST /api/graph`** (multipart field `file` — JSON document; replaces the in-memory graph). Input is validated with `class-validator`; unknown query keys return **400**. **OpenAPI** is served at `/api/docs`.
+
+**Graph loading:** 
+
+Startup and HTTP upload both apply data through **`GraphIngestionService.ingest()`** so you can extend validation, auditing, or swap the bundled initial source by changing Nest providers (`GRAPH_INITIAL_SOURCE` → your adapter).
 
 ---
 
