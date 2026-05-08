@@ -1,6 +1,5 @@
 node_modules/
 dist/
-docs/
 coverage/
 *.log
 npm-debug.log*

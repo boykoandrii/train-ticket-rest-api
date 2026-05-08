@@ -4,6 +4,14 @@ Take-home submission: a **NestJS (TypeScript)** service that loads the Train Tic
 
 ---
 
+## Task
+
+The attached JSON file (train-ticket-be.json) represents a full, working graph of Train Ticket microservices
+and the relations between them:
+https://github.com/FudanSELab/train-ticket
+
+---
+
 ## Planned solution (summary)
 
 **Data layer (`GraphModule`):** On startup, the app reads a single JSON file, normalizes edges (each `to` may be a string or an array of targets), validates edge endpoints against known nodes, and builds an adjacency list plus a node map. Optional fields on nodes get safe defaults (`publicExposed`, `vulnerabilities`). Unknown node `kind` strings are coerced to `service` with a log warning so the domain model stays a closed union (`NodeKind`).
@@ -38,8 +46,16 @@ Take-home submission: a **NestJS (TypeScript)** service that loads the Train Tic
 
 ```bash
 pnpm install
-pnpm run start:dev
+pnpm start:dev
 ```
+
+## Build
+
+```bash
+pnpm build
+```
+
+## Use
 
 - REST base: `http://localhost:3000/api/graph`
 - Swagger UI: `http://localhost:3000/api/docs`
@@ -49,15 +65,11 @@ pnpm run start:dev
 Unit tests live under **`src/**/__tests__/**/*.spec.ts`** next to each feature (`graph`, `query`, `query/filters`). Jest’s default `testRegex` (`.*\\.spec\\.ts$`) with `rootDir: "src"` still discovers them. HTTP integration tests stay in **`test/graph.e2e-spec.ts`** (Jest + Supertest against the real `AppModule`).
 
 ```bash
-pnpm run build
+pnpm build
 pnpm test
-pnpm run test:e2e
-pnpm run lint
+pnpm test:e2e
+pnpm lint
 ```
-
-## Repository deliverable
-
-The assignment also asks for a **link to a git repository** with the implementation; add your remote when you publish—this README is the other required deliverable (written explanation).
 
 ## Extending filters
 
