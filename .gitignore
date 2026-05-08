@@ -1,0 +1,17 @@
+node_modules/
+dist/
+docs/
+coverage/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+.DS_Store
+.npm-cache/
+.env
+.env.*
+!.env.example
+
+.idea/
+.vscode/
+*.tsbuildinfo
+Thumbs.db
